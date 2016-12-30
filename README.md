@@ -3,7 +3,7 @@ KPContactPicker allow user to fetch contact from contact book, it allows user to
 
 ## Screen shots
 <br>
-![Alt text](/../ScreenShot/Simulator%20Screen%20Shot%20Dec%2030%2C%202016%2C%2011.42.26%20AM.png?raw=true "Optional Title")
+![Alt text](/../ScreenShot/Simulator%20Screen%20Shot%20Dec%2030%2C%202016%2C%204.23.07%20PM.png?raw=true "Optional Title")
 ![Alt text](/../ScreenShot/Simulator%20Screen%20Shot%20Dec%2030%2C%202016%2C%2011.35.14%20AM.png?raw=true "Optional Title")
 
 ## Usages
