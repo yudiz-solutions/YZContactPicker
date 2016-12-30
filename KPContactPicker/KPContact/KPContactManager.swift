@@ -17,12 +17,8 @@ struct ContactType: OptionSet {
     static let address = ContactType(rawValue:1 << 3)
 }
 
-class KPContactManager: NSObject {
-    
-    static let shared = KPContactManager()
-    let contactStore = CNContactStore()
-    var contactMustContain = ContactType()
-    
+// MARK: - Public Methods
+extension KPContactManager{
     
     /// Check for contact book permission
     ///
@@ -54,7 +50,7 @@ class KPContactManager: NSObject {
             })
         }
     }
-
+    
     
     /// Search contact by name
     ///
@@ -100,7 +96,7 @@ class KPContactManager: NSObject {
             return nil
         }
     }
-
+    
     
     
     /// This method return all contact in simple array form
@@ -129,7 +125,6 @@ class KPContactManager: NSObject {
                     completion(contacts, err)
                 }
             }
-
         }
     }
     
@@ -161,15 +156,21 @@ class KPContactManager: NSObject {
                     completion(contacts, err)
                 }
             }
-
         }
     }
+}
+
+class KPContactManager: NSObject {
+    
+    static let shared = KPContactManager()
+    let contactStore = CNContactStore()
+    var contactMustContain = ContactType()
     
     /// Create contacts array index wise
     ///
     /// - Parameter contacts: contact object array
     /// - Returns: return alphabet index array
-    private func prepareContectIndexData(contacts: [KPContact])->[String: [KPContact]]{
+    fileprivate func prepareContectIndexData(contacts: [KPContact])->[String: [KPContact]]{
         let arrAlpha = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
         var arrContacts:[String: [KPContact]] = [:]
         for alpha in arrAlpha{
@@ -206,9 +207,9 @@ class KPContactManager: NSObject {
         }
         return arrContacts
     }
-   
+    
     //MARK:- Validate Contact
-    private func validateContact(contact: KPContact) -> Bool{
+    fileprivate func validateContact(contact: KPContact) -> Bool{
         if self.contactMustContain.contains(ContactType.address){
             if checkAddressExists(contact: contact){
                 if self.contactMustContain.contains(ContactType.email){
@@ -248,15 +249,16 @@ class KPContactManager: NSObject {
         }
     }
     
-    private func checkEmailExists(contact:KPContact) -> Bool {
+    fileprivate func checkEmailExists(contact:KPContact) -> Bool {
         return !contact.emails.isEmpty
     }
     
-    private func checkAddressExists(contact:KPContact) -> Bool {
+    fileprivate func checkAddressExists(contact:KPContact) -> Bool {
         return !contact.addresses.isEmpty
     }
     
-    private func checkPhoneExists(contact:KPContact) -> Bool {
+    fileprivate func checkPhoneExists(contact:KPContact) -> Bool {
         return !contact.phoneNo.isEmpty
     }
 }
+
