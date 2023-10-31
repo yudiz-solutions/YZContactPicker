@@ -1,5 +1,5 @@
 //
-//  KPContactPickerVC.swift
+//  YZContactPickerVC.swift
 //  ContactPickerDemo
 //
 //  Created by Yudiz on 12/29/16.
@@ -26,22 +26,22 @@ class ContactCell: UITableViewCell {
     }
 }
 
-class KPContactPickerVC: UIViewController {
+class YZContactPickerVC: UIViewController {
     
     @IBOutlet var tableView: UITableView!
     @IBOutlet var searchBar: UISearchBar!
     
     var keys: [String] = []
-    var contcs: [String: [KPContact]] = [:]
-    var searchContcs: [String: [KPContact]] = [:]
-    var selectionBlock: ((KPContact)->())?
+    var contcs: [String: [YZContact]] = [:]
+    var searchContcs: [String: [YZContact]] = [:]
+    var selectionBlock: ((YZContact)->())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareForkeyboardNotification()
-        KPContactManager.shared.requestForAccess { (accessGranted) in
+        YZContactManager.shared.requestForAccess { (accessGranted) in
             if accessGranted{
-                KPContactManager.shared.fetchContactIndexArray(completion: { (contcs, error) in
+                YZContactManager.shared.fetchContactIndexArray(completion: { (contcs, error) in
                     self.keys = Array(contcs.keys).sorted()
                     self.contcs = contcs
                     self.searchContcs = contcs
@@ -67,7 +67,7 @@ class KPContactPickerVC: UIViewController {
 
 
 // MARK: - Tableview methods
-extension KPContactPickerVC: UITableViewDelegate, UITableViewDataSource{
+extension YZContactPickerVC: UITableViewDelegate, UITableViewDataSource{
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return keys.count
@@ -91,7 +91,7 @@ extension KPContactPickerVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int{
         if keys.contains(title){
-            return keys.index(of: title)!
+            return keys.firstIndex(of: title)!
         }
         return -1
     }
@@ -118,7 +118,7 @@ extension KPContactPickerVC: UITableViewDelegate, UITableViewDataSource{
             var str = ""
             if !comp.isEmpty{
                 for con in comp{
-                    str += String(con.characters.first!)
+                    str += String(con.first!)
                 }
             }
             cell.lblNoImage.text = str
@@ -134,7 +134,7 @@ extension KPContactPickerVC: UITableViewDelegate, UITableViewDataSource{
 
 
 // MARK: - Search Bar
-extension KPContactPickerVC: UISearchBarDelegate{
+extension YZContactPickerVC: UISearchBarDelegate{
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String){
         searchContcs = [:]
@@ -169,19 +169,19 @@ extension KPContactPickerVC: UISearchBarDelegate{
 }
 
 // MARK: - Keyboard Extension
-extension KPContactPickerVC {
+extension YZContactPickerVC {
     func prepareForkeyboardNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(KPContactPickerVC.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(KPContactPickerVC.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(YZContactPickerVC.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(YZContactPickerVC.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    func keyboardWillShow(notification: NSNotification){
-        if let kbSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+    @objc func keyboardWillShow(notification: NSNotification){
+        if let kbSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: kbSize.height, right: 0)
         }
     }
     
-    func keyboardWillHide(notification: NSNotification){
+    @objc func keyboardWillHide(notification: NSNotification){
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
     }
 }

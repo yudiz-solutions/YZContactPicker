@@ -1,5 +1,5 @@
 //
-//  KPContactManager.swift
+//  YZContactManager.swift
 //  MailM8
 //
 //  Created by Yudiz Solutions Pvt.Ltd. on 30/06/16.
@@ -18,7 +18,7 @@ struct ContactType: OptionSet {
 }
 
 // MARK: - Public Methods
-extension KPContactManager{
+extension YZContactManager{
     
     /// Check for contact book permission
     ///
@@ -57,15 +57,15 @@ extension KPContactManager{
     /// - Parameters:
     ///   - term: name of contact which you want to search
     ///   - completion: Returns KPContact array of given name
-    func searchContactByName(term: String!,completion:@escaping (_ contacts :[KPContact],_ error: Error?)->()){
+    func searchContactByName(term: String!,completion:@escaping (_ contacts :[YZContact],_ error: Error?)->()){
         DispatchQueue.global().async {
-            var contacts:[KPContact] = []
+            var contacts:[YZContact] = []
             let keys = [CNContactFormatter.descriptorForRequiredKeys(for: CNContactFormatterStyle.fullName),CNContactPostalAddressesKey, CNContactEmailAddressesKey, CNContactBirthdayKey,CNContactImageDataKey,CNContactOrganizationNameKey,CNContactPhoneNumbersKey] as [Any]
             let pre = CNContact.predicateForContacts(matchingName: term)
             do{
                 let contcs = try self.contactStore.unifiedContacts(matching: pre, keysToFetch: keys as! [CNKeyDescriptor])
                 for con in contcs{
-                    let kpContect = KPContact(contact: con)
+                    let kpContect = YZContact(contact: con)
                     if self.validateContact(contact: kpContect){
                         contacts.append(kpContect)
                     }
@@ -86,11 +86,11 @@ extension KPContactManager{
     ///
     /// - Parameter term: Contact id
     /// - Returns: return contact object if found.
-    func searchContactById(term: String!) -> KPContact?{
+    func searchContactById(term: String!) -> YZContact?{
         let keys = [CNContactFormatter.descriptorForRequiredKeys(for: CNContactFormatterStyle.fullName),CNContactPostalAddressesKey, CNContactEmailAddressesKey, CNContactBirthdayKey,CNContactImageDataKey,CNContactOrganizationNameKey,CNContactPhoneNumbersKey] as [Any]
         do{
             let contcs: CNContact = try self.contactStore.unifiedContact(withIdentifier: term, keysToFetch: keys as! [CNKeyDescriptor])
-            let contact = KPContact(contact: contcs)
+            let contact = YZContact(contact: contcs)
             return contact
         }catch{
             return nil
@@ -102,15 +102,15 @@ extension KPContactManager{
     /// This method return all contact in simple array form
     ///
     /// - Parameter completion: return contact object array and error if occured.
-    func fetchContactArray(completion:@escaping (_ contacts :[KPContact],_ error: Error?)->()) {
+    func fetchContactArray(completion:@escaping (_ contacts :[YZContact],_ error: Error?)->()) {
         DispatchQueue.global().async {
-            var contacts:[KPContact] = []
+            var contacts:[YZContact] = []
             let keys = [CNContactFormatter.descriptorForRequiredKeys(for: CNContactFormatterStyle.fullName),CNContactPostalAddressesKey, CNContactEmailAddressesKey, CNContactBirthdayKey,CNContactImageDataKey,CNContactOrganizationNameKey,CNContactPhoneNumbersKey] as [Any]
             let request = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
             request.sortOrder = CNContactSortOrder.givenName
             do{
                 try self.contactStore.enumerateContacts(with: request) { (contact, pointer) in
-                    let kpContect = KPContact(contact: contact)
+                    let kpContect = YZContact(contact: contact)
                     
                     if self.validateContact(contact: kpContect){
                         contacts.append(kpContect)
@@ -131,17 +131,17 @@ extension KPContactManager{
     /// This method returns Indexed KPContact Array e.g. ["A":[KPContact,KPContact]]
     ///
     /// - Parameter completion: Returns KPContacts e.g. ["A":[KPContact,KPContact]] and error if occur.
-    func fetchContactIndexArray(completion:@escaping (_ contacts :[String: [KPContact]],_ error: Error?)->()) {
+    func fetchContactIndexArray(completion:@escaping (_ contacts :[String: [YZContact]],_ error: Error?)->()) {
         
         DispatchQueue.global().async {
-            var contacts:[String: [KPContact]] = [:]
+            var contacts:[String: [YZContact]] = [:]
             let keys = [CNContactFormatter.descriptorForRequiredKeys(for: CNContactFormatterStyle.fullName),CNContactPostalAddressesKey, CNContactEmailAddressesKey, CNContactBirthdayKey,CNContactImageDataKey,CNContactOrganizationNameKey,CNContactPhoneNumbersKey] as [Any]
             let request = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
             request.sortOrder = CNContactSortOrder.givenName
             do{
-                var cons:[KPContact] = []
+                var cons:[YZContact] = []
                 try self.contactStore.enumerateContacts(with: request) { (contact, pointer) in
-                    let kpContect = KPContact(contact: contact)
+                    let kpContect = YZContact(contact: contact)
                     if self.validateContact(contact: kpContect){
                         cons.append(kpContect)
                     }
@@ -160,9 +160,9 @@ extension KPContactManager{
     }
 }
 
-class KPContactManager: NSObject {
+class YZContactManager: NSObject {
     
-    static let shared = KPContactManager()
+    static let shared = YZContactManager()
     let contactStore = CNContactStore()
     var contactMustContain = ContactType()
     
@@ -170,17 +170,17 @@ class KPContactManager: NSObject {
     ///
     /// - Parameter contacts: contact object array
     /// - Returns: return alphabet index array
-    fileprivate func prepareContectIndexData(contacts: [KPContact])->[String: [KPContact]]{
+    fileprivate func prepareContectIndexData(contacts: [YZContact])->[String: [YZContact]]{
         let arrAlpha = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-        var arrContacts:[String: [KPContact]] = [:]
+        var arrContacts:[String: [YZContact]] = [:]
         for alpha in arrAlpha{
             let cons = contacts.filter({ (contact) -> Bool in
                 if !contact.firstName.isEmpty{
-                    return contact.firstName.uppercased().characters.first == alpha.uppercased().characters.first
+                    return contact.firstName.uppercased().first == alpha.uppercased().first
                 }else if !contact.lastName.isEmpty{
-                    return contact.lastName.uppercased().characters.first == alpha.uppercased().characters.first
+                    return contact.lastName.uppercased().first == alpha.uppercased().first
                 }else if !contact.orgName.isEmpty{
-                    return contact.orgName.uppercased().characters.first == alpha.uppercased().characters.first
+                    return contact.orgName.uppercased().first == alpha.uppercased().first
                 }else{
                     return false
                 }
@@ -192,11 +192,11 @@ class KPContactManager: NSObject {
         
         let nonAlpha = contacts.filter { (contact) -> Bool in
             if !contact.firstName.isEmpty{
-                return contact.firstName.uppercased().characters.first! < "A"
+                return contact.firstName.uppercased().first! < "A"
             }else if !contact.lastName.isEmpty{
-                return contact.lastName.uppercased().characters.first! < "A"
+                return contact.lastName.uppercased().first! < "A"
             }else if !contact.orgName.isEmpty{
-                return contact.orgName.uppercased().characters.first! < "A"
+                return contact.orgName.uppercased().first! < "A"
             }else{
                 return false
             }
@@ -209,7 +209,7 @@ class KPContactManager: NSObject {
     }
     
     //MARK:- Validate Contact
-    fileprivate func validateContact(contact: KPContact) -> Bool{
+    fileprivate func validateContact(contact: YZContact) -> Bool{
         if self.contactMustContain.contains(ContactType.address){
             if checkAddressExists(contact: contact){
                 if self.contactMustContain.contains(ContactType.email){
@@ -249,15 +249,15 @@ class KPContactManager: NSObject {
         }
     }
     
-    fileprivate func checkEmailExists(contact:KPContact) -> Bool {
+    fileprivate func checkEmailExists(contact:YZContact) -> Bool {
         return !contact.emails.isEmpty
     }
     
-    fileprivate func checkAddressExists(contact:KPContact) -> Bool {
+    fileprivate func checkAddressExists(contact:YZContact) -> Bool {
         return !contact.addresses.isEmpty
     }
     
-    fileprivate func checkPhoneExists(contact:KPContact) -> Bool {
+    fileprivate func checkPhoneExists(contact:YZContact) -> Bool {
         return !contact.phoneNo.isEmpty
     }
 }

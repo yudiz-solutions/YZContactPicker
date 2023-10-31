@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        KPContactManager.shared.contactMustContain = [.phone]
+        YZContactManager.shared.contactMustContain = [.phone]
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -31,7 +31,7 @@ class ViewController: UIViewController {
 extension ViewController{
 
     @IBAction func selectContact(sender: UIButton){
-        let pickerVC = UIStoryboard(name: "KPContact", bundle: nil).instantiateViewController(withIdentifier: "KPContactPickerVC") as! KPContactPickerVC
+        let pickerVC = UIStoryboard(name: "KPContact", bundle: nil).instantiateViewController(withIdentifier: "KPContactPickerVC") as! YZContactPickerVC
         pickerVC.selectionBlock = { [unowned self] contact in
             self.lblName.text = contact.fullName
             if let ph = contact.phoneNo.first{

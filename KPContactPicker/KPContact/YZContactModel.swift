@@ -1,5 +1,5 @@
 //
-//  KPContactModel.swift
+//  YZContactModel.swift
 //  ContactPickerDemo
 //
 //  Created by Yudiz on 12/28/16.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import Contacts
 
-class KPContact: NSObject {
+class YZContact: NSObject {
     let contactId: String
     let firstName: String
     let lastName: String
@@ -74,7 +74,7 @@ class KPContact: NSObject {
     }
     
     override func isEqual(_ object: Any?) -> Bool {
-        return contactId == (object as! KPContact).contactId
+        return contactId == (object as! YZContact).contactId
     }
 }
 
